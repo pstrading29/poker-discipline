@@ -1,0 +1,167 @@
+/* ---------- BODY & GLOBAL ---------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #111;
+  color: #eee;
+  text-align: center;
+  overflow-x: hidden;
+  overflow: hidden;  /* no scroll anywhere */
+  position: relative;
+}
+
+.spacer {
+  height: 5em; /* approx 5 empty rows */
+}
+
+/* ---------- SCREEN LAYOUT ---------- */
+.screen {
+display: none;
+height: 100vh;       / full viewport height */
+padding: 24px;
+width: 100%;
+margin-top: 10vh;      /* push content down 10% of screen */
+box-sizing: border-box;
+position: relative;
+}
+
+.screen.active {
+  display: block;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+/* ---------- INPUT & BLOCK ---------- */
+.block {
+  margin-top: 24px;
+}
+
+input {
+  width: 80%;
+  padding: 12px;
+  margin: 8px 0;
+  font-size: 16px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #eee;
+}
+
+/* ---------- BUTTONS ---------- */
+button {
+  width: 80%;
+  padding: 14px;
+  margin-top: 12px;
+  font-size: 16px;
+  background: #2a2a2a;
+  color: #eee;
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.97);
+  background: #3a3a3a;
+}
+
+button.danger {
+  background: #7a1f1f;
+  border: 1px solid #550e0e;
+  color: #fff;
+}
+
+/* ---------- FLEX FOR LEVELS ---------- */
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.col {
+  flex: 1;
+}
+
+/* ---------- LEVEL UP FLASH ---------- */
+.level-up-flash {
+  animation: flash 0.4s ease;
+}
+
+@keyframes flash {
+  0% { color: #fff; }
+  50% { color: #f5d742; text-shadow: 0 0 8px #f5d742; }
+  100% { color: #eee; }
+}
+
+/* ---------- HAND PROGRESS BAR ---------- */
+#handProgressContainer {
+  width: 80%;
+  height: 16px;
+  background: #333;
+  border-radius: 8px;
+  margin: 12px auto;
+  overflow: hidden;
+}
+
+#handProgress {
+  height: 100%;
+  width: 0%;
+  background: #f5d742;
+  transition: width 0.2s;
+}
+
+/* ---------- RETRO SCANLINE ONLY FOR GAME CONTENT ---------- */
+#game-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255,255,255,0.03) 0px,
+    rgba(255,255,255,0.03) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: scroll 4s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---------- SOUND TOGGLE ICON ---------- */
+#soundToggle {
+  position: fixed;
+  font-size: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  color: #f5d742;
+  bottom: 16px;
+  right: 16px;              /* default: bottom-right */
+  left: auto;
+  transform: none;          /* no translate by default */
+  transition: transform 0.1s, color 0.2s; /* remove left/right transitions */
+}
+
+#soundToggle:active {
+  transform: scale(0.9);
+}
+
+/* Make game screen full viewport and prevent scrolling */
+#game-screen {
+  height: 100vh;       /* full viewport height */
+  overflow: hidden;     /* prevent vertical scroll */
+  position: relative;   /* for child absolute/fixed elements if needed */
+  width: 100%;
+margin-top: 20vh;      /* push content down 20% of screen */
+}

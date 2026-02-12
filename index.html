@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Poker Discipline</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SOUND TOGGLE ICON -->
+  <button id="soundToggle" title="Toggle Sound">🔊</button>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <h1>Poker Discipline</h1>
+
+    <div class="block">
+      <h3>Create Game</h3>
+
+      <label>Total Levels (optional)</label>
+      <input type="number" id="totalLevels" placeholder="e.g. 6" />
+
+      <p>— OR —</p>
+
+      <div class="row">
+        <div class="col">
+          <label>Start Level</label>
+          <input type="number" id="startLevel" placeholder="e.g. 5" />
+        </div>
+        <div class="col">
+          <label>End Level</label>
+          <input type="number" id="endLevel" placeholder="e.g. 9" />
+        </div>
+      </div>
+
+      <button id="startGameBtn">Start Game</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <div id="game-content">
+      <h2 id="levelText">Level</h2>
+      <p id="handText">Hands: 0 / 20</p>
+
+      <div id="handProgressContainer">
+        <div id="handProgress"></div>
+      </div>
+
+      <button id="handBtn">Hand Completed</button>
+      <button id="failBtn" class="danger">Strategy Broken</button>
+    </div>
+  </div>
+
+<!-- WIN SCREEN -->
+<div id="win-screen" class="screen">
+  <div class="spacer"></div>
+  <h2>You Win 🏆</h2>
+  <button onclick="resetGame()">Back to Start</button>
+</div>
+
+<!-- LOSE SCREEN -->
+<div id="lose-screen" class="screen">
+  <div class="spacer"></div>
+  <h2>Game Over</h2>
+  <button onclick="resetGame()">Restart</button>
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
