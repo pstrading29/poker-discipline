@@ -30,6 +30,13 @@ function playSound(audio) {
   if (soundEnabled) audio.play();
 }
 
+// ------------------ VIBRATION ------------------
+function vibrate(duration = 30) {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(duration);
+  }
+}
+
 // ------------------ GAME STATE ------------------
 let gameState = {
   currentLevel: 1,
@@ -41,26 +48,16 @@ let gameState = {
 
 // ------------------ SCREEN CONTROL ------------------
 function showScreen(screen) {
-  Object.values(SCREENS).forEach(s => s.classList.remove("active"));
-  screen.classList.add("active");
-  updateSoundButtonPosition();
-}
+  Object.values(SCREENS).forEach(s => {
+    s.classList.remove("active");
+  });
 
-// Update sound icon position
-function updateSoundButtonPosition() {
-  if (SCREENS.start.classList.contains("active")) {
-    // Home screen → bottom center
-    soundToggle.style.bottom = "16px";
-  soundToggle.style.right = "16px";
-  soundToggle.style.left = "auto";
-  soundToggle.style.transform = "none";  // prevent jumping
-  } else {
-    // Game/Win/Lose screens → bottom right
-    soundToggle.style.bottom = "16px";
-    soundToggle.style.right = "16px";
-    soundToggle.style.left = "auto";
-    soundToggle.style.transform = "translateX(0)";
-  }
+  // Allow display change first, then animate
+  setTimeout(() => {
+    screen.classList.add("active");
+  }, 10);
+
+  updateSoundButtonPosition();
 }
 
 // ------------------ START GAME ------------------
@@ -96,7 +93,16 @@ document.getElementById("startGameBtn").addEventListener("click", () => {
 });
 
 // ------------------ GAME LOGIC ------------------
+let lastTapTime = 0;
+
 handBtn.addEventListener("click", () => {
+  const now = Date.now();
+  if (now - lastTapTime < 250) return; // prevent rapid double taps
+  lastTapTime = now;
+
+  // Light vibration for each tap
+  if ("vibrate" in navigator) navigator.vibrate(20);
+
   if (gameState.hands >= 20) return;
 
   gameState.hands++;
@@ -104,6 +110,10 @@ handBtn.addEventListener("click", () => {
   updateHandProgress();
 
   if (gameState.hands >= 20) {
+
+    // Stronger vibration on level up
+    if ("vibrate" in navigator) navigator.vibrate(80);
+
     playSound(audioLevelUp);
     levelText.classList.add("level-up-flash");
     setTimeout(() => levelText.classList.remove("level-up-flash"), 400);
@@ -115,7 +125,12 @@ handBtn.addEventListener("click", () => {
     setTimeout(() => handBtn.disabled = false, 500);
 
     const finalLevel = gameState.startLevel + gameState.totalLevels - 1;
+
     if (gameState.currentLevel > finalLevel) {
+
+      // Win vibration pattern
+      if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+
       playSound(audioWin);
       clearGame();
       showScreen(SCREENS.win);
@@ -127,7 +142,11 @@ handBtn.addEventListener("click", () => {
 });
 
 failBtn.addEventListener("click", () => {
+
   if (confirm("Are you sure? This will reset the game.")) {
+
+    if ("vibrate" in navigator) navigator.vibrate([150, 80, 150]);
+
     playSound(audioLose);
     clearGame();
     showScreen(SCREENS.lose);
@@ -179,3 +198,25 @@ function resetGame() {
 
 // ------------------ INIT ------------------
 loadGame();
+
+// Helper to flash a button
+function flashButton(btn, duration = 150) {
+  btn.classList.add("level-up-flash"); // reuse the same flash animation
+  setTimeout(() => btn.classList.remove("level-up-flash"), duration);
+}
+
+// ------------------ BUTTON VIBRATIONS + FLASH ------------------
+
+// Start Game Button
+startGameBtn.addEventListener("click", () => {
+  vibrate(30);
+  flashButton(startGameBtn);
+});
+
+// Restart / Back to Start Buttons
+document.querySelectorAll("#win-screen button, #lose-screen button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    vibrate(30);
+    flashButton(btn);
+  });
+});
