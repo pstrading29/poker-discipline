@@ -18,7 +18,7 @@ body {
 /* ---------- SCREEN LAYOUT ---------- */
 .screen {
 display: none;
-height: 100vh;       / full viewport height */
+height: 100vh;       /* full viewport height */
 padding: 24px;
 width: 100%;
 margin-top: 10vh;      /* push content down 10% of screen */
@@ -56,7 +56,7 @@ button {
   padding: 14px;
   margin-top: 12px;
   font-size: 16px;
-  background: #2a2a2a;
+  background: #5e8a51;
   color: #eee;
   border: 1px solid #444;
   cursor: pointer;
@@ -65,7 +65,7 @@ button {
 
 button:active {
   transform: scale(0.97);
-  background: #3a3a3a;
+  background: #5e8a51;
 }
 
 button.danger {
@@ -122,8 +122,8 @@ button.danger {
   height: 100%;
   background: repeating-linear-gradient(
     to right,
-    rgba(255,255,255,0.03) 0px,
-    rgba(255,255,255,0.03) 1px,
+    rgba(245, 215, 66, 0.03) 0px,
+    rgba(245, 215, 66, 0.03) 1px,
     transparent 2px,
     transparent 4px
   );
@@ -140,28 +140,78 @@ button.danger {
 /* ---------- SOUND TOGGLE ICON ---------- */
 #soundToggle {
   position: fixed;
-  font-size: 24px;
+  font-size: 11px;
   background: transparent;
   border: none;
   cursor: pointer;
-  z-index: 1000;
-  color: #f5d742;
-  bottom: 16px;
-  right: 16px;              /* default: bottom-right */
-  left: auto;
-  transform: none;          /* no translate by default */
-  transition: transform 0.1s, color 0.2s; /* remove left/right transitions */
+  z-index: 1001;
+  color: #1a1a1a;
+  top: 0.5vh;
+  left: 90%;
+  transform: translateX(-50%);
+  transition: transform 0.1s, color 0.2s;
+  outline: none;
+
+  -webkit-tap-highlight-color: transparent; /* remove tap flash */
+  -webkit-touch-callout: none;              /* prevent long press menu on iOS */
 }
 
 #soundToggle:active {
-  transform: scale(0.9);
+  transform: translateX(-50%) scale(0.9); /* preserve horizontal position while scaling */
+  background: transparent;
+  outline: none;
 }
 
 /* Make game screen full viewport and prevent scrolling */
 #game-screen {
+  background: #111; /* same as body */
   height: 100vh;       /* full viewport height */
   overflow: hidden;     /* prevent vertical scroll */
   position: relative;   /* for child absolute/fixed elements if needed */
   width: 100%;
 margin-top: 20vh;      /* push content down 20% of screen */
+}
+
+/* ---------- SCREEN TRANSITIONS ---------- */
+.screen {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- RETRO SCANLINE FOR ENTIRE APP ---------- */
+body::before {
+  content: '';
+  position: fixed;      /* cover entire viewport */
+  top: 0;
+  left: 0;
+  width: 200%;          /* wider for scrolling effect */
+  height: 100%;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(245, 215, 66, 0.03) 0px,
+    rgba(245, 215, 66, 0.03) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: scroll 4s linear infinite;
+  z-index: 0;
+  pointer-events: none; /* allow clicks through it */
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Make sure all screens are above the scanline */
+.screen {
+  position: relative;
+  z-index: 1;
 }
