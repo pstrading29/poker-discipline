@@ -99,6 +99,7 @@ button.danger {
 #handProgressContainer {
   width: 80%;
   height: 16px;
+  border: 1px solid #333;
   background: #1a1a1a;
   border-radius: 8px;
   margin: 12px auto;
