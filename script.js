@@ -13,6 +13,8 @@ const failBtn = document.getElementById("failBtn");
 const soundToggle = document.getElementById("soundToggle");
 
 // ------------------ AUDIO ------------------
+const audioStartGame = new Audio("sounds/start-game.mp3");  // new sound for Start Game button
+const audioHandClick = new Audio("sounds/hand-click.mp3");   // new sound for Hand Completed
 const audioLevelUp = new Audio("sounds/level-up.mp3");
 const audioWin = new Audio("sounds/win.mp3");
 const audioLose = new Audio("sounds/lose.mp3");
@@ -28,6 +30,12 @@ soundToggle.addEventListener("click", () => {
 // Helper for playing sounds
 function playSound(audio) {
   if (soundEnabled) audio.play();
+}
+
+function playClickSound(src) {
+  if (!soundEnabled) return;
+  const audio = new Audio(src);
+  audio.play();
 }
 
 // ------------------ VIBRATION ------------------
@@ -62,6 +70,7 @@ function showScreen(screen) {
 
 // ------------------ START GAME ------------------
 document.getElementById("startGameBtn").addEventListener("click", () => {
+  playSound(audioStartGame);  // <-- play sound on click
   const totalLevelsInput = parseInt(document.getElementById("totalLevels").value);
   const startLevelInput = parseInt(document.getElementById("startLevel").value);
   const endLevelInput = parseInt(document.getElementById("endLevel").value);
@@ -99,6 +108,9 @@ handBtn.addEventListener("click", () => {
   const now = Date.now();
   if (now - lastTapTime < 250) return; // prevent rapid double taps
   lastTapTime = now;
+
+// Play click sound
+  playClickSound("sounds/hand-click.mp3");
 
   // Light vibration for each tap
   if ("vibrate" in navigator) navigator.vibrate(20);
