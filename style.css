@@ -123,12 +123,12 @@ button.danger {
   height: 100%;
   background: repeating-linear-gradient(
     to right,
-    rgba(245, 215, 66, 0.03) 0px,
-    rgba(245, 215, 66, 0.03) 1px,
+    rgba(245, 215, 66, 0.10) 0px,
+    rgba(245, 215, 66, 0.10) 1px,
     transparent 2px,
     transparent 4px
   );
-  animation: scroll 4s linear infinite;
+  animation: scroll 45s linear infinite;
   z-index: 0;
   pointer-events: none;
 }
@@ -196,12 +196,12 @@ body::before {
   height: 100%;
   background: repeating-linear-gradient(
     to right,
-    rgba(245, 215, 66, 0.03) 0px,
-    rgba(245, 215, 66, 0.03) 1px,
+    rgba(245, 215, 66, 0.10) 0px,
+    rgba(245, 215, 66, 0.10) 1px,
     transparent 2px,
     transparent 4px
   );
-  animation: scroll 4s linear infinite;
+  animation: scroll 45s linear infinite;
   z-index: 0;
   pointer-events: none; /* allow clicks through it */
 }
