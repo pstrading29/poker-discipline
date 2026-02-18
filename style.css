@@ -222,57 +222,29 @@ button {
   z-index: 2;   /* sits above scanline overlay */
 }
 
-/* ---------- RANGE REFERENCE HUD PANEL ---------- */
+/* ---------- RANGE REFERENCE (CENTERED BLOCK) ---------- */
 .range-reference {
-  margin-top: 56px;
-  margin: 40px auto 0 auto;  /* centers it */
-  text-indent: 2ch;
-  padding: 16px;
-  width: 80%;
-  box-sizing: border-box;
-
-  background: #1a1a1a;
-  border: 1px solid #111;
-  border-radius: 10px;
-font-family: monospace;
+  width: fit-content;       /* shrink to content width */
+  margin: 80px auto 0 auto; /* center the block */
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 500;
   letter-spacing: 0.5px;
-  font-size: 10px;
+  text-shadow: 
+    0 1px 0 #000,
+    0 -1px 0 #000,
+    1px 0 0 #000,
+    -1px 0 0 #000;px rgba(0,0,0,0.8);
+  font-size: 12px;
   line-height: 1.6;
-  text-align: left;
-
-  box-shadow: 0 0 10px rgba(245, 215, 66, 0.15);
-  backdrop-filter: blur(2px);
-
-  position: relative;
-  overflow: hidden;
-}
-
-.range-reference strong {
-  color: #f5d742;
-  font-weight: 600;
+  text-align: left;         /* align text inside */
 }
 
 .range-reference p {
   margin: 4px 0;
 }
 
-.range-reference::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-
-  background: repeating-linear-gradient(
-    to right,
-    rgba(245, 215, 66, 0.08) 0px,
-    rgba(245, 215, 66, 0.08) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-
-  animation: scroll 45s linear infinite;
-
-  pointer-events: none;
+.range-reference strong {
+  color: #f5d742;
+  font-weight: 600;
 }
+  
