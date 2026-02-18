@@ -115,40 +115,37 @@ handBtn.addEventListener("click", () => {
   // Light vibration for each tap
   if ("vibrate" in navigator) navigator.vibrate(20);
 
-  if (gameState.hands >= 20) return;
-
   gameState.hands++;
   updateGameUI();
   updateHandProgress();
 
-  if (gameState.hands >= 20) {
+  if (gameState.hands === 20) {
 
-    // Stronger vibration on level up
+  const finalLevel = gameState.startLevel + gameState.totalLevels - 1;
+
+  if (gameState.currentLevel >= finalLevel) {
+
+    if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+    playSound(audioWin);
+    clearGame();
+    showScreen(SCREENS.win);
+    return;
+
+  } else {
+
     if ("vibrate" in navigator) navigator.vibrate(80);
-
     playSound(audioLevelUp);
+
     levelText.classList.add("level-up-flash");
     setTimeout(() => levelText.classList.remove("level-up-flash"), 400);
 
-    gameState.hands = 0;
     gameState.currentLevel++;
+    gameState.hands = 0;
 
-    handBtn.disabled = true;
-    setTimeout(() => handBtn.disabled = false, 500);
-
-    const finalLevel = gameState.startLevel + gameState.totalLevels - 1;
-
-    if (gameState.currentLevel > finalLevel) {
-
-      // Win vibration pattern
-      if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
-
-      playSound(audioWin);
-      clearGame();
-      showScreen(SCREENS.win);
-      return;
-    }
+    updateGameUI();
+    updateHandProgress();
   }
+}
 
   saveGame();
 });
