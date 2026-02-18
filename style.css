@@ -226,6 +226,7 @@ button {
 .range-reference {
   margin-top: 56px;
   margin: 40px auto 0 auto;  /* centers it */
+  text-indent: 2ch;
   padding: 16px;
   width: 80%;
   box-sizing: border-box;
@@ -235,7 +236,7 @@ button {
   border-radius: 10px;
 font-family: monospace;
   letter-spacing: 0.5px;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.6;
   text-align: left;
 
