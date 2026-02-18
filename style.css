@@ -216,3 +216,8 @@ body::before {
   position: relative;
   z-index: 1;
 }
+
+button {
+  position: relative;
+  z-index: 2;   /* sits above scanline overlay */
+}
