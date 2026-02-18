@@ -170,7 +170,7 @@ button.danger {
   overflow: hidden;     /* prevent vertical scroll */
   position: relative;   /* for child absolute/fixed elements if needed */
   width: 100%;
-margin-top: 20vh;      /* push content down 20% of screen */
+margin-top: 10vh;      /* push content down 20% of screen */
 }
 
 /* ---------- SCREEN TRANSITIONS ---------- */
@@ -220,4 +220,37 @@ body::before {
 button {
   position: relative;
   z-index: 2;   /* sits above scanline overlay */
+}
+
+/* ---------- RANGE REFERENCE HUD PANEL ---------- */
+.range-reference {
+  margin-top: 56px;
+  margin: 40px auto 0 auto;  /* centers it */
+  padding: 16px;
+  width: 80%;
+  box-sizing: border-box;
+
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #111;
+  border-radius: 10px;
+font-family: monospace;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+
+  box-shadow: 0 0 10px rgba(245, 215, 66, 0.15);
+  backdrop-filter: blur(2px);
+
+  position: relative;
+  z-index: 2; /* above scanline */
+}
+
+.range-reference strong {
+  color: #f5d742;
+  font-weight: 600;
+}
+
+.range-reference p {
+  margin: 4px 0;
 }
