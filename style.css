@@ -224,7 +224,7 @@ button {
 
 /* ---------- RANGE REFERENCE (CENTERED BLOCK) ---------- */
 .range-reference {
-  width: fit-content;       /* shrink to content width */
+  width: 80%;       /* shrink to content width */
   margin: 80px auto 0 auto; /* center the block */
   font-family: 'Share Tech Mono', monospace;
   font-weight: 500;
@@ -248,3 +248,6 @@ button {
   font-weight: 600;
 }
   
+.range-gap {
+  height: 12px;   /* adjust spacing here */
+}
