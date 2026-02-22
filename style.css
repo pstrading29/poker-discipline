@@ -6,30 +6,63 @@ body {
   background: #392A48;
   color: #eee;
   text-align: center;
-  overflow-x: hidden;
-  overflow: hidden;  /* no scroll anywhere */
+  overflow: hidden;
   position: relative;
 }
 
-.spacer {
-  height: 5em; /* approx 5 empty rows */
+/* ---------- GLOBAL SCANLINE OVERLAY ---------- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(245, 215, 66, 0.10) 0px,
+    rgba(245, 215, 66, 0.10) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: scroll 45s linear infinite;
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* ---------- SCREEN LAYOUT ---------- */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---------- SCREEN SYSTEM (FIXED) ---------- */
 .screen {
-display: none;
-height: 100vh;       /* full viewport height */
-padding: 24px;
-width: 100%;
-margin-top: 10vh;      /* push content down 10% of screen */
-box-sizing: border-box;
-position: relative;
+  display: none;
+  height: 100vh;
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
 .screen.active {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
+/* Keep 10% vertical offset ONLY for start & game */
+#start-screen,
+#game-screen {
+  margin-top: 10vh;
+}
+
+/* ---------- HEADINGS ---------- */
 h1, h2, h3 {
   font-weight: 600;
   margin: 12px 0;
@@ -61,11 +94,12 @@ button {
   border: 1px solid #444;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
+  position: relative;
+  z-index: 2;
 }
 
 button:active {
   transform: scale(0.97);
-  background: #5e8a51;
 }
 
 button.danger {
@@ -74,7 +108,7 @@ button.danger {
   color: #fff;
 }
 
-/* ---------- FLEX FOR LEVELS ---------- */
+/* ---------- FLEX ROW FOR LEVEL INPUT ---------- */
 .row {
   display: flex;
   gap: 12px;
@@ -84,7 +118,7 @@ button.danger {
   flex: 1;
 }
 
-/* ---------- LEVEL UP FLASH ---------- */
+/* ---------- LEVEL FLASH ---------- */
 .level-up-flash {
   animation: flash 0.4s ease;
 }
@@ -103,42 +137,88 @@ button.danger {
   background: #1a1a1a;
   border-radius: 8px;
   margin: 12px auto;
+  display: flex;
   overflow: hidden;
 }
 
 #handProgress {
+  display: flex;
+  width: 100%;
   height: 100%;
-  width: 0%;
-  background: #f5d742;
-  transition: width 0.2s;
 }
 
-/* ---------- RETRO SCANLINE ONLY FOR GAME CONTENT ---------- */
-#game-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    to right,
-    rgba(245, 215, 66, 0.10) 0px,
-    rgba(245, 215, 66, 0.10) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  animation: scroll 45s linear infinite;
-  z-index: 0;
-  pointer-events: none;
+.hand-segment {
+  flex: 1;
+  margin-right: 1px;      /* gap between segments */
+  background: #f5d742;    /* color for filled segment */
+  opacity: 0;             /* start invisible */
+  transition: opacity 0.2s;
 }
 
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.hand-segment:last-child {
+  margin-right: 0;
 }
 
-/* ---------- SOUND TOGGLE ICON ---------- */
+/* ---------- ACTION BUTTON GRID ---------- */
+.action-buttons {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-row {
+  display: flex;
+}
+
+.action-row button {
+  flex: 1;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* ---------- RANGE REFERENCE ---------- */
+.range-reference {
+  width: 80%;
+  margin: 40px auto 0 auto;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.range-reference p {
+  margin: 4px 0;
+}
+
+.range-reference strong {
+  color: #f5d742;
+}
+
+.range-gap {
+  height: 12px;
+}
+
+/* ---------- HUD BAR ---------- */
+.hud-bar {
+  width: 80%;
+  margin: 24px auto 12px auto;
+  font-family: monospace;
+  font-size: 12px;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.hud-title {
+  color: #f5d742;
+  font-weight: 700;
+}
+
+.hud-value {
+  color: #eee;
+}
+
+/* ---------- SOUND TOGGLE ---------- */
 #soundToggle {
   position: fixed;
   font-size: 11px;
@@ -150,104 +230,15 @@ button.danger {
   top: 0.5vh;
   left: 90%;
   transform: translateX(-50%);
-  transition: transform 0.1s, color 0.2s;
-  outline: none;
-
-  -webkit-tap-highlight-color: transparent; /* remove tap flash */
-  -webkit-touch-callout: none;              /* prevent long press menu on iOS */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 #soundToggle:active {
-  transform: translateX(-50%) scale(0.9); /* preserve horizontal position while scaling */
-  background: transparent;
-  outline: none;
+  transform: translateX(-50%) scale(0.9);
 }
 
-/* Make game screen full viewport and prevent scrolling */
-#game-screen {
-  background: #392A48; /* same as body */
-  height: 100vh;       /* full viewport height */
-  overflow: hidden;     /* prevent vertical scroll */
-  position: relative;   /* for child absolute/fixed elements if needed */
-  width: 100%;
-margin-top: 10vh;      /* push content down 20% of screen */
-}
-
-/* ---------- SCREEN TRANSITIONS ---------- */
-.screen {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.screen.active {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---------- RETRO SCANLINE FOR ENTIRE APP ---------- */
-body::before {
-  content: '';
-  position: fixed;      /* cover entire viewport */
-  top: 0;
-  left: 0;
-  width: 200%;          /* wider for scrolling effect */
-  height: 100%;
-  background: repeating-linear-gradient(
-    to right,
-    rgba(245, 215, 66, 0.10) 0px,
-    rgba(245, 215, 66, 0.10) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  animation: scroll 45s linear infinite;
-  z-index: 0;
-  pointer-events: none; /* allow clicks through it */
-}
-
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Make sure all screens are above the scanline */
-.screen {
-  position: relative;
-  z-index: 1;
-}
-
-button {
-  position: relative;
-  z-index: 2;   /* sits above scanline overlay */
-}
-
-/* ---------- RANGE REFERENCE (CENTERED BLOCK) ---------- */
-.range-reference {
-  width: 80%;       /* shrink to content width */
-  margin: 40px auto 0 auto; /* center the block */
-  font-family: 'Share Tech Mono', monospace;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-shadow: 
-    0 1px 0 #000,
-    0 -1px 0 #000,
-    1px 0 0 #000,
-    -1px 0 0 #000;px rgba(0,0,0,0.8);
-  font-size: 12px;
-  line-height: 1.6;
-  text-align: left;         /* align text inside */
-}
-
-.range-reference p {
-  margin: 4px 0;
-}
-
-.range-reference strong {
-  color: #f5d742;
-  font-weight: 600;
-}
-  
-.range-gap {
-  height: 12px;   /* adjust spacing here */
+/* ---------- SPACER ---------- */
+.spacer {
+  height: 5em;
 }
