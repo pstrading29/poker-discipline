@@ -8,13 +8,13 @@ const SCREENS = {
 
 const levelText = document.getElementById("levelText");
 const handText = document.getElementById("handText");
-const handBtn = document.getElementById("handBtn");
 const failBtn = document.getElementById("failBtn");
 const soundToggle = document.getElementById("soundToggle");
+const actionButtons = document.querySelectorAll(".action-btn");
+const startGameBtn = document.getElementById("startGameBtn");
 
 // ------------------ AUDIO ------------------
-const audioStartGame = new Audio("sounds/start-game.mp3");  // new sound for Start Game button
-const audioHandClick = new Audio("sounds/hand-click.mp3");   // new sound for Hand Completed
+const audioStartGame = new Audio("sounds/start-game.mp3");
 const audioLevelUp = new Audio("sounds/level-up.mp3");
 const audioWin = new Audio("sounds/win.mp3");
 const audioLose = new Audio("sounds/lose.mp3");
@@ -27,50 +27,52 @@ soundToggle.addEventListener("click", () => {
   soundToggle.textContent = soundEnabled ? "🔊" : "🔇";
 });
 
-// Helper for playing sounds
-function playSound(audio) {
-  if (soundEnabled) audio.play();
+function playSound(audio) { 
+  if (soundEnabled) audio.play(); 
 }
 
-function playClickSound(src) {
-  if (!soundEnabled) return;
-  const audio = new Audio(src);
-  audio.play();
+function playClickSound(src) { 
+  if (!soundEnabled) return; 
+  new Audio(src).play(); 
 }
 
 // ------------------ VIBRATION ------------------
-function vibrate(duration = 30) {
-  if ("vibrate" in navigator) {
-    navigator.vibrate(duration);
-  }
+function vibrate(duration = 30) { 
+  if ("vibrate" in navigator) navigator.vibrate(duration); 
 }
 
 // ------------------ GAME STATE ------------------
 let gameState = {
   currentLevel: 1,
+  startLevel: 1,
   endLevel: 1,
-  hands: 0,
   totalLevels: 1,
-  startLevel: 1
+  hands: 0,          // hands in current level
+  sessionHands: 0,   // cumulative session hands
+  stats: {           // single source of truth for HUD
+    VPIP: 0,
+    PFR: 0,
+    threeBet: 0,
+    fourBet: 0,
+    hands: 0
+  }
 };
 
 // ------------------ SCREEN CONTROL ------------------
 function showScreen(screen) {
-  Object.values(SCREENS).forEach(s => {
-    s.classList.remove("active");
-  });
-
-  // Allow display change first, then animate
-  setTimeout(() => {
-    screen.classList.add("active");
-  }, 10);
-
-  updateSoundButtonPosition();
+  Object.values(SCREENS).forEach(s => s && s.classList.remove("active"));
+  if (screen) screen.classList.add("active");
 }
 
 // ------------------ START GAME ------------------
-document.getElementById("startGameBtn").addEventListener("click", () => {
-  playSound(audioStartGame);  // <-- play sound on click
+startGameBtn.addEventListener("click", () => {
+  vibrate(30); 
+  flashButton(startGameBtn); 
+  playSound(audioStartGame);
+
+  // Clear previous game
+  clearGame();
+
   const totalLevelsInput = parseInt(document.getElementById("totalLevels").value);
   const startLevelInput = parseInt(document.getElementById("startLevel").value);
   const endLevelInput = parseInt(document.getElementById("endLevel").value);
@@ -80,82 +82,106 @@ document.getElementById("startGameBtn").addEventListener("click", () => {
     gameState.currentLevel = 1;
     gameState.endLevel = totalLevelsInput;
     gameState.totalLevels = totalLevelsInput;
-  } else if (
-    startLevelInput && endLevelInput &&
-    startLevelInput > 0 &&
-    endLevelInput >= startLevelInput
-  ) {
+  } else if (startLevelInput && endLevelInput && startLevelInput > 0 && endLevelInput >= startLevelInput) {
     gameState.startLevel = startLevelInput;
     gameState.currentLevel = startLevelInput;
     gameState.endLevel = endLevelInput;
     gameState.totalLevels = endLevelInput - startLevelInput + 1;
   } else {
-    alert("Enter valid level settings:\n- Total Levels > 0\n- OR Start Level ≤ End Level");
+    alert("Enter valid level settings");
     return;
   }
 
+  // Reset stats and hands
   gameState.hands = 0;
+  gameState.sessionHands = 0;
+  gameState.stats = { VPIP:0, PFR:0, threeBet:0, fourBet:0, hands:0 };
+gameState.firstHandClicked = false;  // ✅ reset flag
+
   saveGame();
   updateGameUI();
   updateHandProgress();
+  updateHUD();
   showScreen(SCREENS.game);
 });
 
-// ------------------ GAME LOGIC ------------------
+// ------------------ ACTION BUTTON LOGIC ------------------
 let lastTapTime = 0;
 
-handBtn.addEventListener("click", () => {
-  const now = Date.now();
-  if (now - lastTapTime < 250) return; // prevent rapid double taps
-  lastTapTime = now;
+actionButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const now = Date.now();
+    if (now - lastTapTime < 250) return; // prevent double tap
+    lastTapTime = now;
 
-// Play click sound
-  playClickSound("sounds/hand-click.mp3");
+    const action = button.dataset.action.toLowerCase();
 
-  // Light vibration for each tap
-  if ("vibrate" in navigator) navigator.vibrate(20);
+    // --- Sound & Vibration ---
+    playClickSound("sounds/hand-click.mp3");
+    vibrate(20);
 
-  gameState.hands++;
-  updateGameUI();
-  updateHandProgress();
+    // 1️⃣ Update stats first
+    if (["call","bet","3bet","4bet"].includes(action)) gameState.stats.VPIP++;
+    if (["bet","3bet","4bet"].includes(action)) gameState.stats.PFR++;
+    if (action === "3bet") gameState.stats.threeBet++;
+    if (action === "4bet") gameState.stats.fourBet++;
 
-  if (gameState.hands === 20) {
-
-  const finalLevel = gameState.startLevel + gameState.totalLevels - 1;
-
-  if (gameState.currentLevel >= finalLevel) {
-
-    if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
-    playSound(audioWin);
-    clearGame();
-    showScreen(SCREENS.win);
-    return;
-
-  } else {
-
-    if ("vibrate" in navigator) navigator.vibrate(80);
-    playSound(audioLevelUp);
-
-    levelText.classList.add("level-up-flash");
-    setTimeout(() => levelText.classList.remove("level-up-flash"), 400);
-
-    gameState.currentLevel++;
-    gameState.hands = 0;
-
-    updateGameUI();
-    updateHandProgress();
-  }
+// --- INCREMENT HANDS & STATS ---
+if (!gameState.firstHandClicked) {
+    gameState.firstHandClicked = true; // mark first click
 }
 
-  saveGame();
+// Increment hands & stats on every click
+gameState.hands++;          // level hands
+gameState.sessionHands++;   // session hands
+gameState.stats.hands = gameState.sessionHands;
+
+// --- UPDATE UI ---
+updateGameUI();
+updateHandProgress();
+updateHUD();
+
+    // ----- LEVEL COMPLETE -----
+    if (gameState.hands === 10) {
+      const finalLevel = gameState.startLevel + gameState.totalLevels - 1;
+
+      if (gameState.currentLevel >= finalLevel) {
+        vibrate([200, 100, 200]);
+        playSound(audioWin);
+
+        // Show final HUD stats
+        updateFinalHUD();
+
+        // Clear old game to prevent old hands from loading again
+        clearGame();
+        showScreen(SCREENS.win);
+        return;
+      } else {
+        // LEVEL UP
+        vibrate(80);
+        playSound(audioLevelUp);
+        levelText.classList.add("level-up-flash");
+        setTimeout(() => levelText.classList.remove("level-up-flash"), 400);
+
+        gameState.currentLevel++;
+        gameState.hands = 0; // reset per-level hands
+
+        // Update UI after level change
+        updateGameUI();
+        updateHandProgress();
+        updateHUD();
+      }
+    }
+
+    // Save state after click
+    saveGame();
+  });
 });
 
+// ------------------ FAIL / RESET ------------------
 failBtn.addEventListener("click", () => {
-
-  if (confirm("Are you sure? This will reset the game.")) {
-
-    if ("vibrate" in navigator) navigator.vibrate([150, 80, 150]);
-
+  if(confirm("Are you sure? This will reset the game.")) {
+    vibrate([150,80,150]);
     playSound(audioLose);
     clearGame();
     showScreen(SCREENS.lose);
@@ -165,12 +191,63 @@ failBtn.addEventListener("click", () => {
 // ------------------ UI UPDATE ------------------
 function updateGameUI() {
   levelText.textContent = `Level ${gameState.currentLevel} of ${gameState.endLevel}`;
-  handText.textContent = `Hands Completed: ${gameState.hands} / 20`;
+  handText.textContent = `Hands Completed: ${gameState.hands} / 10`;
 }
 
 function updateHandProgress() {
-  const progress = (gameState.hands / 20) * 100;
-  document.getElementById("handProgress").style.width = `${progress}%`;
+  const container = document.getElementById("handProgress");
+  if (!container) return;
+
+  container.innerHTML = ""; // clear previous
+
+  for (let i = 0; i < 10; i++) {
+    const seg = document.createElement("div");
+    seg.classList.add("hand-segment");
+    if (i < gameState.hands) seg.style.opacity = "1"; // completed
+    container.appendChild(seg);
+  }
+}
+
+function updateHUD() {
+  const hud = document.querySelector("#game-screen #hudBar");
+  if (!hud) return;
+
+  const values = hud.querySelectorAll(".hud-value");
+  if (values.length < 5) return;
+
+  const hands = Number(gameState.stats.hands) || 0;
+
+  const vpipPct  = hands > 0 ? Math.min(100, Math.round((gameState.stats.VPIP / hands) * 100)) : 0;
+  const pfrPct   = hands > 0 ? Math.min(100, Math.round((gameState.stats.PFR / hands) * 100)) : 0;
+  const threePct = hands > 0 ? Math.min(100, Math.round((gameState.stats.threeBet / hands) * 100)) : 0;
+  const fourPct  = hands > 0 ? Math.min(100, Math.round((gameState.stats.fourBet / hands) * 100)) : 0;
+
+  values[0].textContent = vpipPct;
+  values[1].textContent = pfrPct;
+  values[2].textContent = threePct;
+  values[3].textContent = fourPct;
+  values[4].textContent = hands;
+}
+
+function updateFinalHUD() {
+  const finalHud = document.querySelector("#finalHUD");
+  if (!finalHud) return;
+
+  const values = finalHud.querySelectorAll(".hud-value");
+  if (values.length < 5) return;
+
+  const hands = Number(gameState.stats.hands) || 0;
+
+  const vpipPct  = hands > 0 ? Math.min(100, Math.round((gameState.stats.VPIP / hands) * 100)) : 0;
+  const pfrPct   = hands > 0 ? Math.min(100, Math.round((gameState.stats.PFR / hands) * 100)) : 0;
+  const threePct = hands > 0 ? Math.min(100, Math.round((gameState.stats.threeBet / hands) * 100)) : 0;
+  const fourPct  = hands > 0 ? Math.min(100, Math.round((gameState.stats.fourBet / hands) * 100)) : 0;
+
+  values[0].textContent = vpipPct;
+  values[1].textContent = pfrPct;
+  values[2].textContent = threePct;
+  values[3].textContent = fourPct;
+  values[4].textContent = hands;
 }
 
 // ------------------ LOCAL STORAGE ------------------
@@ -180,52 +257,42 @@ function saveGame() {
 
 function loadGame() {
   const saved = localStorage.getItem("pokerDisciplineGame");
-  if (saved) {
+  if(saved){
     gameState = JSON.parse(saved);
-
     gameState.startLevel = gameState.startLevel || 1;
     gameState.currentLevel = gameState.currentLevel || gameState.startLevel;
     gameState.hands = gameState.hands || 0;
     gameState.totalLevels = gameState.totalLevels || 1;
-    gameState.endLevel = gameState.endLevel || (gameState.startLevel + gameState.totalLevels - 1);
-
-    updateGameUI();
-    updateHandProgress();
+    gameState.endLevel = gameState.endLevel || (gameState.startLevel + gameState.totalLevels -1);
+    gameState.stats = gameState.stats || { VPIP:0, PFR:0, threeBet:0, fourBet:0, hands:0 };
+    updateGameUI(); 
+    updateHandProgress(); 
+    updateHUD();
     showScreen(SCREENS.game);
   }
 }
 
-function clearGame() {
-  localStorage.removeItem("pokerDisciplineGame");
+function clearGame() { 
+  localStorage.removeItem("pokerDisciplineGame"); 
 }
 
-// ------------------ RESET GAME ------------------
-function resetGame() {
-  clearGame();
-  showScreen(SCREENS.start);
+function resetGame() { 
+  clearGame(); 
+  showScreen(SCREENS.start); 
 }
+
+// ------------------ BUTTON FLASH ------------------
+function flashButton(btn,d=150) { 
+  btn.classList.add("level-up-flash"); 
+  setTimeout(() => btn.classList.remove("level-up-flash"), d); 
+}
+
+document.querySelectorAll("#win-screen button,#lose-screen button").forEach(btn => {
+  btn.addEventListener("click", () => { 
+    vibrate(30); 
+    flashButton(btn); 
+  });
+});
 
 // ------------------ INIT ------------------
 loadGame();
-
-// Helper to flash a button
-function flashButton(btn, duration = 150) {
-  btn.classList.add("level-up-flash"); // reuse the same flash animation
-  setTimeout(() => btn.classList.remove("level-up-flash"), duration);
-}
-
-// ------------------ BUTTON VIBRATIONS + FLASH ------------------
-
-// Start Game Button
-startGameBtn.addEventListener("click", () => {
-  vibrate(30);
-  flashButton(startGameBtn);
-});
-
-// Restart / Back to Start Buttons
-document.querySelectorAll("#win-screen button, #lose-screen button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    vibrate(30);
-    flashButton(btn);
-  });
-});
