@@ -255,8 +255,16 @@ button.danger {
   transform: scale(0.9);
 }
 
-/* ---------- PRIVACY MODE ---------- */
+/* ---------- PRIVACY MODE (GLOBAL) ---------- */
 
-#game-screen.privacy-active > *:not(.top-controls) {
+body.privacy-active > *:not(.top-controls) {
   visibility: hidden;
+}
+
+body.privacy-active::before {
+  visibility: visible; /* keep scanlines */
+}
+
+body.privacy-active .top-controls {
+  visibility: visible;
 }
