@@ -12,6 +12,7 @@ const failBtn = document.getElementById("failBtn");
 const soundToggle = document.getElementById("soundToggle");
 const actionButtons = document.querySelectorAll(".action-btn");
 const startGameBtn = document.getElementById("startGameBtn");
+const privacyToggle = document.getElementById("privacyToggle");
 
 // ------------------ AUDIO ------------------
 const audioStartGame = new Audio("sounds/start-game.mp3");
@@ -19,12 +20,35 @@ const audioLevelUp = new Audio("sounds/level-up.mp3");
 const audioWin = new Audio("sounds/win.mp3");
 const audioLose = new Audio("sounds/lose.mp3");
 
+// ------------------ PRIVACY MODE ------------------
+let privacyActive = false;
+
+// Set initial icon
+privacyToggle.textContent = "🐒";
+
+privacyToggle.addEventListener("click", () => {
+  privacyActive = !privacyActive;
+
+  if (privacyActive) {
+    SCREENS.game.classList.add("privacy-active");
+    privacyToggle.textContent = "🙈";
+  } else {
+    SCREENS.game.classList.remove("privacy-active");
+    privacyToggle.textContent = "🐒";
+  }
+  vibrate(20);
+});
+
 // ------------------ SOUND TOGGLE ------------------
 let soundEnabled = true;
 
+// Set initial icon
+soundToggle.textContent = "🐵";
+
 soundToggle.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
-  soundToggle.textContent = soundEnabled ? "🔊" : "🔇";
+  soundToggle.textContent = soundEnabled ? "🐵" : "🙊";
+  vibrate(20);
 });
 
 function playSound(audio) { 
