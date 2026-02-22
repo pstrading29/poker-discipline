@@ -240,7 +240,7 @@ button.danger {
   margin: 0;   /* 👈 remove inherited margin */
   padding: 2px 4px;   /* 👈 much smaller */
   width: auto;        /* override 80% width */
-  font-size: 20px;
+  font-size: 25px;
   background: transparent;
   border: none;
   color: #1a1a1a;
