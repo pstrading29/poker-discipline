@@ -218,27 +218,45 @@ button.danger {
   color: #eee;
 }
 
-/* ---------- SOUND TOGGLE ---------- */
-#soundToggle {
-  position: fixed;
-  font-size: 11px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-  color: #1a1a1a;
-  top: 0.5vh;
-  left: 90%;
-  transform: translateX(-50%);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
-#soundToggle:active {
-  transform: translateX(-50%) scale(0.9);
-}
-
 /* ---------- SPACER ---------- */
 .spacer {
   height: 5em;
+}
+
+/* ---------- TOP RIGHT CONTROLS ---------- */
+
+.top-controls {
+  position: fixed;
+  top: 5vh;
+  right: 20px;
+  display: flex;
+  flex-direction: column;   /* 👈 stack vertically */
+  gap: 10px;                 /* spacing between buttons */
+  z-index: 1001;
+}
+
+/* Shared button styling */
+.top-controls button {
+  margin: 0;   /* 👈 remove inherited margin */
+  padding: 2px 4px;   /* 👈 much smaller */
+  width: auto;        /* override 80% width */
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  color: #1a1a1a;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  transition: transform 0.1s ease;
+}
+
+/* Tap animation */
+.top-controls button:active {
+  transform: scale(0.9);
+}
+
+/* ---------- PRIVACY MODE ---------- */
+
+#game-screen.privacy-active > *:not(.top-controls) {
+  visibility: hidden;
 }
