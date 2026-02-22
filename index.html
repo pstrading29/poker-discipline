@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -38,43 +38,81 @@
     </div>
   </div>
 
-  <!-- GAME SCREEN -->
-  <div id="game-screen" class="screen">
-    <div id="game-content">
-      <h2 id="levelText">Level</h2>
-      <p id="handText">Hands: 0 / 20</p>
-
-      <div id="handProgressContainer">
-        <div id="handProgress"></div>
-      </div>
-
-      <button id="handBtn">Hand Completed</button>
-      <button id="failBtn" class="danger">Strategy Broken</button>
-    </div>
-    <div class="range-reference">
-  <p><strong>RFI:</strong> AA-77, AJs+, AQo+, KQs</p>
-  <p><strong>3Bet:</strong> AA-QQ, AKo-AQs</p>
-  <p><strong>Def.3B:</strong> AA-99, AKs-AQs</p>
-  <p><strong>4Bet:</strong> AA, KK, AKs</p>
-  <p class="range-gap"></p>
-  <p><strong>###</strong> Play in position. Focus on realizing equity.</p>
-</div>
-</div>
+ <!-- GAME SCREEN -->  
+  <div id="game-screen" class="screen">  
+    <div id="game-content">  
+      <h2 id="levelText">Level</h2>  
+      <p id="handText">Hands: 0 / 10</p>  
   
+      <div id="handProgressContainer">  
+        <div id="handProgress"></div>  
+      </div>  
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <div class="action-row">
+        <button class="action-btn" data-action="call">Call</button>
+        <button class="action-btn" data-action="fold">Fold</button>
+        <button class="action-btn" data-action="check">Check</button>
+      </div>
+      <div class="action-row">
+        <button class="action-btn" data-action="bet">Bet</button>
+        <button class="action-btn" data-action="3bet">3B</button>
+        <button class="action-btn" data-action="4bet">4B</button>
+      </div>
+    </div>
+
+    <!-- STRATEGY BROKEN BUTTON -->
+    <button id="failBtn" class="danger">Strategy Broken</button>
+
+    <!-- RANGE REFERENCE -->
+    <div class="range-reference">
+      <p><strong>RFI:</strong> AA-77, AJs+, AQo+, KQs</p>
+      <p><strong>3Bet:</strong> AA-QQ, AKo-AQs</p>
+      <p><strong>Def.3B:</strong> AA-99, AKs-AQs</p>
+      <p><strong>4Bet:</strong> AA, KK, AKs</p>
+      <p class="range-gap"></p>
+      <p><strong>###</strong> Play in position. Focus on realizing equity.</p>
+      <p class="range-gap"></p>
+    </div>
+
+    <!-- HUD Bar -->
+    <div id="hudBar" class="hud-bar">
+      <span class="hud-title">V</span>  <span class="hud-value">0</span>
+      <span class="hud-title">P</span>  <span class="hud-value">0</span>
+      <span class="hud-title">3B</span> <span class="hud-value">0</span>
+      <span class="hud-title">4B</span> <span class="hud-value">0</span>
+      <span class="hud-title">H</span>  <span class="hud-value">0</span>
+    </div>
+  </div>
 
 <!-- WIN SCREEN -->
 <div id="win-screen" class="screen">
   <div class="spacer"></div>
   <h2>You Win 🏆</h2>
   <button onclick="resetGame()">Back to Start</button>
+
+  <!-- Final Session Stats -->
+  <p class="range-gap"></p>
+  <p class="range-gap"></p>
+
+  <div id="finalHUD" class="hud-bar" style="margin-top: 20px; text-align:center; font-family: monospace; font-size:12px;">
+    <p style="margin:4px 0; color:#f5d742;"><strong>Your session stats:</strong></p>
+    <span class="hud-title">V</span> <span class="hud-value">0</span>
+    <span class="hud-title">P</span> <span class="hud-value">0</span>
+    <span class="hud-title">3B</span> <span class="hud-value">0</span>
+    <span class="hud-title">4B</span> <span class="hud-value">0</span>
+    <span class="hud-title">H</span> <span class="hud-value">0</span>
+  </div>
 </div>
 
-<!-- LOSE SCREEN -->
-<div id="lose-screen" class="screen">
-  <div class="spacer"></div>
-  <h2>Game Over</h2>
-  <button onclick="resetGame()">Restart</button>
-</div>
+  <!-- LOSE SCREEN -->
+  <div id="lose-screen" class="screen">
+    <div class="spacer"></div>
+    <h2>Game Over</h2>
+    <button onclick="resetGame()">Restart</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
