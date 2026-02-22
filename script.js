@@ -30,10 +30,10 @@ privacyToggle.addEventListener("click", () => {
   privacyActive = !privacyActive;
 
   if (privacyActive) {
-    SCREENS.game.classList.add("privacy-active");
+    document.body.classList.add("privacy-active");
     privacyToggle.textContent = "🙈";
   } else {
-    SCREENS.game.classList.remove("privacy-active");
+    document.body.classList.remove("privacy-active");
     privacyToggle.textContent = "🐒";
   }
   vibrate(20);
