@@ -13,12 +13,16 @@ const soundToggle = document.getElementById("soundToggle");
 const actionButtons = document.querySelectorAll(".action-btn");
 const startGameBtn = document.getElementById("startGameBtn");
 const privacyToggle = document.getElementById("privacyToggle");
+const addLevelBtn = document.getElementById("addLevelBtn");
 
 // ------------------ AUDIO ------------------
 const audioStartGame = new Audio("sounds/start-game.mp3");
 const audioLevelUp = new Audio("sounds/level-up.mp3");
 const audioWin = new Audio("sounds/win.mp3");
 const audioLose = new Audio("sounds/lose.mp3");
+
+// --- multi-undo---
+let gameStateHistory = [];  // stack for multi-undo
 
 // ------------------ PRIVACY MODE ------------------
 let privacyActive = false;
@@ -60,6 +64,33 @@ function playClickSound(src) {
   new Audio(src).play(); 
 }
 
+function updateTopControls() {
+  const addBtn = document.getElementById("addLevelBtn");
+  addBtn.style.display = SCREENS.game.classList.contains("active") ? "block" : "none";
+  
+  const undoBtn = document.getElementById("undoBtn");
+  undoBtn.style.display = SCREENS.game.classList.contains("active") ? "block" : "none";
+}
+
+// ------------------ ADD LEVEL BUTTON ------------------
+addLevelBtn.addEventListener("click", () => {
+  // Increment total levels
+  gameState.endLevel++;               
+  gameState.totalLevels++;            
+
+  // Flash feedback
+  levelText.classList.add("level-up-flash");
+  setTimeout(() => levelText.classList.remove("level-up-flash"), 400);
+
+  // Update UI and save state
+  updateGameUI();
+  saveGame();
+
+  // Optional: feedback
+  vibrate(50);
+  playClickSound("sounds/hand-click.mp3");
+});
+
 // ------------------ VIBRATION ------------------
 function vibrate(duration = 30) { 
   if ("vibrate" in navigator) navigator.vibrate(duration); 
@@ -86,7 +117,17 @@ let gameState = {
 function showScreen(screen) {
   Object.values(SCREENS).forEach(s => s && s.classList.remove("active"));
   if (screen) screen.classList.add("active");
-}
+  
+  // update buttons visibility
+  updateTopControls();
+} 
+
+// Show add-level button only on game screen
+  if(screen === SCREENS.game){
+    document.getElementById("addLevelBtn").style.display = "block";
+  } else {
+    document.getElementById("addLevelBtn").style.display = "none";
+  }
 
 // ------------------ START GAME ------------------
 startGameBtn.addEventListener("click", () => {
@@ -143,6 +184,9 @@ actionButtons.forEach(button => {
     // --- Sound & Vibration ---
     playClickSound("sounds/hand-click.mp3");
     vibrate(20);
+    
+    // --- Save state for undo ---
+gameStateHistory.push(JSON.parse(JSON.stringify(gameState)));
 
     // 1️⃣ Update stats first
     if (["call","bet","3bet","4bet"].includes(action)) gameState.stats.VPIP++;
@@ -210,6 +254,30 @@ failBtn.addEventListener("click", () => {
     clearGame();
     showScreen(SCREENS.lose);
   }
+});
+
+const undoBtn = document.getElementById("undoBtn");
+
+undoBtn.addEventListener("click", () => {
+  if(gameStateHistory.length === 0) {
+    vibrate(20);
+    return; // nothing to undo
+  }
+
+  // Pop the last state
+  gameState = gameStateHistory.pop();
+
+  // Update UI
+  updateGameUI();
+  updateHandProgress();
+  updateHUD();
+
+  // Optional: vibrate or play sound
+  vibrate(50);
+  playClickSound("sounds/hand-click.mp3");
+
+  // Save restored state to localStorage
+  saveGame();
 });
 
 // ------------------ UI UPDATE ------------------
@@ -293,6 +361,7 @@ function loadGame() {
     updateHandProgress(); 
     updateHUD();
     showScreen(SCREENS.game);
+    updateTopControls();
   }
 }
 
