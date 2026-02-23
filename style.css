@@ -44,7 +44,6 @@ body::before {
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.35s ease, transform 0.35s ease;
@@ -78,9 +77,10 @@ input {
   padding: 12px;
   margin: 8px 0;
   font-size: 16px;
+  border-radius: 8px;
   border: 1px solid #333;
   background: #1a1a1a;
-  color: #eee;
+  color: #f5d742;
 }
 
 /* ---------- BUTTONS ---------- */
@@ -89,6 +89,7 @@ button {
   padding: 14px;
   margin-top: 12px;
   font-size: 16px;
+  border-radius: 8px;
   background: #5e8a51;
   color: #eee;
   border: 1px solid #444;
@@ -149,9 +150,9 @@ button.danger {
 
 .hand-segment {
   flex: 1;
-  margin-right: 1px;      /* gap between segments */
-  background: #f5d742;    /* color for filled segment */
-  opacity: 0;             /* start invisible */
+  margin-right: 1px;       /* gap between segments */
+  background: #f5d742;     /* color for filled segment */
+  opacity: 0;              /* start invisible */
   transition: opacity 0.2s;
 }
 
@@ -168,13 +169,35 @@ button.danger {
 }
 
 .action-row {
-  display: flex;
+  display: flex;        /* row layout */
 }
 
 .action-row button {
-  flex: 1;
-  margin: 0;
-  border-radius: 0;
+  flex: 1;              /* buttons stretch equally */
+  margin: 3px;            /* remove default margins */
+  border-radius: 8px;     /* square corners */
+  font-size: 13px;
+  background: #5e8a51;  /* ✅ green for action buttons */
+}
+
+/* ---------- STRATEGY FAILED BUTTON ---------- */
+#failBtn {
+  width: 80%;           /* match action buttons container */
+  padding: 14px;        /* same as action buttons */
+  font-size: 13px;      /* match action buttons */
+  border-radius: 8px;     /* match corners of action buttons */
+  margin: 3px;            /* spacing handled by container/flex gap */
+  background: #7a1f1f;  /* danger color */
+  border: 1px solid #550e0e;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  position: relative;
+  z-index: 2;
+}
+
+#failBtn:active {
+  transform: scale(0.97);
 }
 
 /* ---------- RANGE REFERENCE ---------- */
@@ -224,23 +247,22 @@ button.danger {
 }
 
 /* ---------- TOP RIGHT CONTROLS ---------- */
-
 .top-controls {
   position: fixed;
   top: 5vh;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  flex-direction: column;   /* 👈 stack vertically */
-  gap: 10px;                 /* spacing between buttons */
+  flex-direction: row;
+  gap: 10px;
   z-index: 1001;
 }
 
-/* Shared button styling */
 .top-controls button {
-  margin: 0;   /* 👈 remove inherited margin */
-  padding: 2px 4px;   /* 👈 much smaller */
-  width: auto;        /* override 80% width */
-  font-size: 25.0px;
+  margin: 0;
+  padding: 2px 4px;
+  width: auto;
+  font-size: 22px;
   background: transparent;
   border: none;
   color: #1a1a1a;
@@ -250,13 +272,20 @@ button.danger {
   transition: transform 0.1s ease;
 }
 
-/* Tap animation */
 .top-controls button:active {
   transform: scale(0.9);
 }
 
-/* ---------- PRIVACY MODE (GLOBAL) ---------- */
+#soundToggle {
+  margin-bottom: 0px;
+}
 
+/* ---------- ADD LEVEL BUTTON VISIBILITY ---------- */
+#addLevelBtn {
+  display: none;  /* only show on game screen */
+}
+
+/* ---------- PRIVACY MODE (GLOBAL) ---------- */
 body.privacy-active > *:not(.top-controls) {
   visibility: hidden;
 }
@@ -267,4 +296,29 @@ body.privacy-active::before {
 
 body.privacy-active .top-controls {
   visibility: visible;
+}
+
+/* ---------- UNDO BUTTON ---------- */
+#undoBtn {
+  display: none;
+  position: fixed;
+  top: 27vh;
+  right: 20px;
+  font-size: 12px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  color: #000;
+  z-index: 1002;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
