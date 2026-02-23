@@ -1,4 +1,4 @@
-<!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,10 +8,11 @@
 </head>
 <body>
 
-  <!-- CONTROLS TOGGLE ICONS -->
-  <div class="top-controls">
-  <button id="privacyToggle" class="privacy-btn">👁</button>
-  <button id="soundToggle">🔊</button>
+<!-- CONTROLS TOGGLE ICONS -->
+<div class="top-controls">
+  <button id="privacyToggle" class="privacy-btn">🐒</button>
+  <button id="soundToggle">🐵</button>
+  <button id="addLevelBtn">🐶</button> <!-- moved inside -->
 </div>
 
   <!-- START SCREEN -->
@@ -41,16 +42,16 @@
     </div>
   </div>
 
- <!-- GAME SCREEN -->  
-  <div id="game-screen" class="screen">  
-    <div id="game-content">  
-      <h2 id="levelText">Level</h2>  
-      <p id="handText">Hands: 0 / 10</p>  
-  
-      <div id="handProgressContainer">  
-        <div id="handProgress"></div>  
-      </div>  
-    </div>
+<!-- GAME SCREEN -->  
+<div id="game-screen" class="screen">  
+  <div id="game-content">  
+    <h2 id="levelText">Level</h2>  
+    <p id="handText">Hands: 0 / 10</p>  
+
+    <div id="handProgressContainer">  
+      <div id="handProgress"></div>
+    </div>  
+  </div>
 
     <!-- ACTION BUTTONS -->
     <div class="action-buttons">
@@ -88,6 +89,8 @@
       <span class="hud-title">4B</span> <span class="hud-value">0</span>
       <span class="hud-title">H</span>  <span class="hud-value">0</span>
     </div>
+    <!-- UNDO BUTTON -->
+  <button id="undoBtn">🪄</button>
   </div>
 
 <!-- WIN SCREEN -->
