@@ -222,6 +222,14 @@ button.danger {
   height: 12px;
 }
 
+/* ----- Gold headers ----- */
+.app-title,
+#game-content h2,
+#win-screen h2,
+#lose-screen h2 {
+  color: #f5d742;
+}
+
 /* ---------- HUD BAR ---------- */
 .hud-bar {
   width: 80%;
