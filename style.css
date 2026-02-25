@@ -48,7 +48,7 @@ body::before {
   transform: translateY(10px);
   transition: opacity 0.35s ease, transform 0.35s ease;
 }
- 
+
 .screen.active {
   display: block;
   opacity: 1;
@@ -290,7 +290,27 @@ button.danger {
 
 /* ---------- ADD LEVEL BUTTON VISIBILITY ---------- */
 #addLevelBtn {
-  display: none;  /* only show on game screen */
+  display: none;
+  position: fixed;
+  top: 16.5vh;
+  right: 20px;
+  font-size: 12px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  color: #000;
+  z-index: 1002;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* ---------- PRIVACY MODE (GLOBAL) ---------- */
