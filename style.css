@@ -38,7 +38,7 @@ body::before {
 /* ---------- SCREEN SYSTEM (FIXED) ---------- */
 .screen {
   display: none;
-  height: 100vh;
+  min-height: 100vh;
   padding: 24px;
   width: 100%;
   box-sizing: border-box;
@@ -349,4 +349,17 @@ body.privacy-active .top-controls {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* ===== Enable scroll only in compact / floating window ===== */
+
+@media (max-height: 650px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .screen {
+    min-height: auto;
+    padding-bottom: 40px; /* extra breathing room */
+  }
 }
