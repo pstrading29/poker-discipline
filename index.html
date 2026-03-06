@@ -13,9 +13,12 @@
   <button id="privacyToggle" class="privacy-btn">🐒</button>
   <button id="soundToggle">🐵</button>
 </div>
-    <!-- UNDO BUTTON -->
+
+   <!-- New Range Trainer toggle -->
+  <button id="rangeToggle">🎮</button> 
+  
+    <!-- ADD LEVEL BUTTON -->
   <button id="addLevelBtn">✨</button>
-  </div>
 
   <!-- START SCREEN -->
   <div id="start-screen" class="screen active">
@@ -92,9 +95,45 @@
       <span class="hud-title">4B</span> <span class="hud-value">0</span>
       <span class="hud-title">H</span>  <span class="hud-value">0</span>
     </div>
+    
     <!-- UNDO BUTTON -->
   <button id="undoBtn">✨</button>
   </div>
+  
+<!-- ---------------- MINI RANGE TRAINER ---------------- -->
+<div id="range-screen" class="screen">
+  <h2>Range Trainer</h2>
+  
+<!-- Random hand display -->
+<div id="miniHand">
+  <div class="card" id="card1" data-card=""></div>
+  <div class="card" id="card2" data-card=""></div>
+</div>
+
+<!-- Action buttons -->
+<div class="action-buttons">
+  <div class="action-row">
+    <button class="mini-action-btn" data-action="fold">FOLD</button>
+    <button class="mini-action-btn" data-action="limp">L-CALL</button>
+    <button class="mini-action-btn" data-action="limp3b">L-3B</button>
+  </div>
+</div>
+
+<!-- Mini-game HUD -->
+<div id="miniHud" class="range-reference">
+  <p><strong>Score:</strong> <span id="miniScore">0</span></p>
+  <p><strong>Hands:</strong> <span id="miniHands">0</span></p>
+  <p><strong>Accuracy:</strong> <span id="miniAccuracy">0%</span></p>
+  <p><strong>Streak:</strong> <span id="miniStreak">0</span></p>
+</div>
+
+  <!-- Optional: mini-game range reference -->
+  <div class="range-reference">
+    <p><strong>### Limp:</strong> AA-22, AKs-ATs, AKo-AJo, A9s-A8s | 10% </p>
+    <p><strong>### L-Call:</strong> JJ-22 | 5% </p>
+    <p><strong>### L-3Bet:</strong> AA-QQ, AKs-ATs, AKo-AJo, A9s-A8s | 5% </p>
+  </div>
+</div>
 
 <!-- WIN SCREEN -->
 <div id="win-screen" class="screen">
