@@ -333,11 +333,11 @@ body.privacy-active .top-controls {
   visibility: visible;
 }
 
-/* ---------- UNDO BUTTON ---------- */
-#undoBtn {
+/* ---------- RANGE TOGGLE BUTTON ---------- */
+#rangeToggle {
   display: none;
   position: fixed;
-  top: 27vh;
+  top: 6.1vh;
   right: 20px;
   font-size: 12px;
   width: auto;
@@ -358,9 +358,8 @@ body.privacy-active .top-controls {
   user-select: none;
 }
 
-
-/* ---------- RANGE TOGGLE BUTTON ---------- */
-#rangeToggle {
+/* ---------- UNDO BUTTON ---------- */
+#undoBtn {
   display: none;
   position: fixed;
   top: 27vh;
