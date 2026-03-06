@@ -3,7 +3,8 @@ const SCREENS = {
   start: document.getElementById("start-screen"),
   game: document.getElementById("game-screen"),
   win: document.getElementById("win-screen"),
-  lose: document.getElementById("lose-screen")
+  lose: document.getElementById("lose-screen"),
+  range: null // we'll create this screen next
 };
 
 const levelText = document.getElementById("levelText");
@@ -14,6 +15,15 @@ const actionButtons = document.querySelectorAll(".action-btn");
 const startGameBtn = document.getElementById("startGameBtn");
 const privacyToggle = document.getElementById("privacyToggle");
 const addLevelBtn = document.getElementById("addLevelBtn");
+const miniHand = document.getElementById("miniHand");
+const miniScore = document.getElementById("miniScore");
+const miniHands = document.getElementById("miniHands");
+const miniAccuracy = document.getElementById("miniAccuracy");
+const miniStreak = document.getElementById("miniStreak");
+const miniActionButtons = document.querySelectorAll(".mini-action-btn");
+const card1Img = document.getElementById("card1-img");
+const card2Img = document.getElementById("card2-img");
+
 
 // ------------------ AUDIO ------------------
 const audioStartGame = new Audio("sounds/start-game.mp3");
@@ -23,6 +33,86 @@ const audioLose = new Audio("sounds/lose.mp3");
 
 // --- multi-undo---
 let gameStateHistory = [];  // stack for multi-undo
+
+// ------------------ STARTING HANDS ------------------
+const startingHands = [
+  // Pairs
+  "AA","KK","QQ","JJ","TT","99","88","77","66","55","44","33","22",
+  
+  // Suited hands (s = suited)
+  "AKs","AQs","AJs","ATs","A9s","A8s","A7s","A6s","A5s","A4s","A3s","A2s",
+  "KQs","KJs","KTs","K9s","K8s","K7s","K6s","K5s","K4s","K3s","K2s",
+  "QJs","QTs","Q9s","Q8s","Q7s","Q6s","Q5s","Q4s","Q3s","Q2s",
+  "JTs","J9s","J8s","J7s","J6s","J5s","J4s","J3s","J2s",
+  "T9s","T8s","T7s","T6s","T5s","T4s","T3s","T2s",
+  "98s","97s","96s","95s","94s","93s","92s",
+  "87s","86s","85s","84s","83s","82s",
+  "76s","75s","74s","73s","72s",
+  "65s","64s","63s","62s",
+  "54s","53s","52s",
+  "43s","42s",
+  "32s",
+
+  // Offsuit hands (o = offsuit)
+  "AKo","AQo","AJo","ATo","A9o","A8o","A7o","A6o","A5o","A4o","A3o","A2o",
+  "KQo","KJo","KTo","K9o","K8o","K7o","K6o","K5o","K4o","K3o","K2o",
+  "QJo","QTo","Q9o","Q8o","Q7o","Q6o","Q5o","Q4o","Q3o","Q2o",
+  "JTo","J9o","J8o","J7o","J6o","J5o","J4o","J3o","J2o",
+  "T9o","T8o","T7o","T6o","T5o","T4o","T3o","T2o",
+  "98o","97o","96o","95o","94o","93o","92o",
+  "87o","86o","85o","84o","83o","82o",
+  "76o","75o","74o","73o","72o",
+  "65o","64o","63o","62o",
+  "54o","53o","52o",
+  "43o","42o",
+  "32o"
+];
+
+// ------------------ RANDOM HAND FUNCTIONS ------------------
+function getRandomHand() {
+  const index = Math.floor(Math.random() * startingHands.length);
+  return startingHands[index];
+}
+
+function displayMiniHandCSS() {
+  if (!miniGame.currentHand) return;
+
+  // miniGame.currentHandText is what displayMiniHandText() would show
+  const handText = convertRangeToText(miniGame.currentHand); // e.g., "KhQc" or "6h6d"
+  const cards = handText.match(/.{2}/g);                      // ["Kh", "Qc"]
+
+  // Assign to CSS card elements
+  const c1 = document.getElementById("card1");
+  const c2 = document.getElementById("card2");
+
+  c1.dataset.card = cards[0];  // e.g., "Kh"
+  c2.dataset.card = cards[1];  // e.g., "Qc"
+}
+
+// ------------------ CORRECT ACTIONS ------------------
+const correctAction = {};
+
+// 1️⃣ Pocket Pairs 22-JJ → Limp
+["22","33","44","55","66","77","88","99","TT","JJ"].forEach(hand => {
+  correctAction[hand] = "limp";
+});
+
+// 2️⃣ Strong Aces → Limp3B
+["AA","KK","QQ","AKs","AKo","AQs","AQo","AJs","AJo","ATs","A9s","A8s"].forEach(hand => {
+  correctAction[hand] = "limp3b";
+});
+
+// 3️⃣ All other hands → Fold
+startingHands.forEach(hand => {
+  if (!(hand in correctAction)) {
+    correctAction[hand] = "fold";
+  }
+});
+
+// Example usage:
+// console.log(correctAction["KhJs"]); // "fold"
+// console.log(correctAction["AQs"]);   // "limp3b"
+// console.log(correctAction["66"]);    // "limp"
 
 // ------------------ PRIVACY MODE ------------------
 let privacyActive = false;
@@ -70,7 +160,34 @@ function updateTopControls() {
   
   const undoBtn = document.getElementById("undoBtn");
   undoBtn.style.display = SCREENS.game.classList.contains("active") ? "block" : "none";
+  
+  const rangeBtn = document.getElementById("rangeToggle");
+  rangeBtn.style.display = (SCREENS.game.classList.contains("active") || SCREENS.range.classList.contains("active")) ? "block" : "none";
 }
+
+// ------------------ RANGE TRAINER TOGGLE ------------------
+
+// 1. Add a reference to the new button
+const rangeToggle = document.getElementById("rangeToggle");
+
+// 2. Add a placeholder for the Range Trainer screen
+SCREENS.range = document.getElementById("range-screen"); // We'll create this div in HTML next
+
+// 3. Track toggle state
+let onRangeScreen = false;
+
+// 4. Toggle event listener
+rangeToggle.addEventListener("click", () => {
+  onRangeScreen = !onRangeScreen;
+
+  if (onRangeScreen) {
+    // Only show first hand if miniGame.currentHand is null (first time or after session reset)
+    if (!miniGame.currentHand) showRandomHand();
+    showScreen(SCREENS.range); 
+  } else {
+    showScreen(SCREENS.game);
+  }
+});
 
 // ------------------ ADD LEVEL BUTTON ------------------
 addLevelBtn.addEventListener("click", () => {
@@ -112,6 +229,123 @@ let gameState = {
     hands: 0
   }
 };
+
+// ------------------ MINI-GAME STATE ------------------
+let miniGame = {
+  score: 0,
+  hands: 0,
+  streak: 0,
+  currentHand: null,
+};
+
+function showRandomHand() {
+  miniGame.currentHand = getRandomHand(); // still "KQo", "66", etc.
+  displayMiniHandCSS();                          // show images via CSS
+}
+
+function convertRangeToText(hand) {
+  const ranks = hand.slice(0, 2); // "KQ" or "66"
+  const type = hand.length === 3 ? hand[2] : null; // "s" or "o" or null for pairs
+
+  // Define suits
+  const suits = ["h", "d", "c", "s"]; // hearts, diamonds, clubs, spades
+
+  if (!type) {
+    // Pocket pair → just assign different suits randomly
+    let suit1 = suits[Math.floor(Math.random() * 4)];
+    let suit2;
+    do { suit2 = suits[Math.floor(Math.random() * 4)]; } while(suit2 === suit1);
+    return ranks[0]+suit1 + ranks[1]+suit2; // e.g., "6h6d"
+  }
+
+  if (type === "s") {
+    // Suited → same suit
+    const suit = suits[Math.floor(Math.random() * 4)];
+    return ranks[0]+suit + ranks[1]+suit; // e.g., "KhQh"
+  } else if (type === "o") {
+    // Offsuit → different suits
+    let suit1 = suits[Math.floor(Math.random() * 4)];
+    let suit2;
+    do { suit2 = suits[Math.floor(Math.random() * 4)]; } while(suit2 === suit1);
+    return ranks[0]+suit1 + ranks[1]+suit2; // e.g., "KhQc"
+  }
+
+  return hand; // fallback
+}
+
+// Display function
+
+function getCardSymbol(card) {
+  const rank = card[0]; // A, K, Q, J, T, 9...
+  const suit = card[1].toLowerCase(); // d, h, c, s
+
+  const suits = { 
+    h: "♥", 
+    d: "♦", 
+    c: "♣", 
+    s: "♠" 
+  };
+
+  return rank + suits[suit];
+}
+
+
+function displayMiniHandText() {
+  if (!miniGame.currentHand) return;
+  miniHand.textContent = convertRangeToText(miniGame.currentHand);
+}
+
+function displayMiniHandImages() {
+  if (!miniGame.currentHand) return;
+
+  // miniGame.currentHand should be ["Kh", "Qc"] format
+  const [card1, card2] = miniGame.currentHand;
+
+  card1Img.src = `cards/${card1}.png`;
+  card2Img.src = `cards/${card2}.png`;
+}
+
+// Store original function
+const originalShowRandomHand = showRandomHand;
+
+showRandomHand = function() {
+  originalShowRandomHand(); // keeps current logic intact
+  displayMiniHand();        // adds visual cards
+};
+
+// ------------------ MINI ACTION BUTTONS ------------------
+miniActionButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.action.toLowerCase();
+    const correct = correctAction[miniGame.currentHand];
+
+    miniGame.hands++;
+
+    if (action === correct) {
+      miniGame.score++;
+      miniGame.streak++;
+    } else {
+      miniGame.streak = 0;
+    }
+
+    // Update HUD
+    miniScore.textContent = miniGame.score;
+    miniHands.textContent = miniGame.hands;
+    miniStreak.textContent = miniGame.streak;
+
+    const accuracy = Math.round((miniGame.score / miniGame.hands) * 100);
+    miniAccuracy.textContent = accuracy + "%";
+    
+    saveMiniGame();
+
+// Next hand
+    showRandomHand();
+
+    vibrate(20);
+    playClickSound("sounds/hand-click.mp3");
+  });
+});
+
 
 // ------------------ SCREEN CONTROL ------------------
 function showScreen(screen) {
@@ -167,6 +401,7 @@ gameState.firstHandClicked = false;  // ✅ reset flag
   updateGameUI();
   updateHandProgress();
   updateHUD();
+  resetMiniGame();
   showScreen(SCREENS.game);
 });
 
@@ -219,6 +454,9 @@ updateHUD();
 
         // Show final HUD stats
         updateFinalHUD();
+        
+        // Reset mini-game for next session
+    resetMiniGame();
 
         // Clear old game to prevent old hands from loading again
         clearGame();
@@ -251,6 +489,10 @@ failBtn.addEventListener("click", () => {
   if(confirm("Are you sure? This will reset the game.")) {
     vibrate([150,80,150]);
     playSound(audioLose);
+    
+    // Reset mini-game on session loss
+    resetMiniGame();
+
     clearGame();
     showScreen(SCREENS.lose);
   }
@@ -374,6 +616,45 @@ function resetGame() {
   showScreen(SCREENS.start); 
 }
 
+function resetMiniGame() {
+  miniGame.score = 0;
+  miniGame.hands = 0;
+  miniGame.streak = 0;
+  miniGame.currentHand = null;
+
+  miniScore.textContent = "0";
+  miniHands.textContent = "0";
+  miniStreak.textContent = "0";
+  miniAccuracy.textContent = "0%";
+}
+
+function saveMiniGame() {
+  localStorage.setItem("miniGameState", JSON.stringify(miniGame));
+}
+
+function loadMiniGame() {
+  const savedMini = localStorage.getItem("miniGameState");
+
+  if (savedMini) {
+    Object.assign(miniGame, JSON.parse(savedMini));
+
+    miniScore.textContent = miniGame.score;
+    miniHands.textContent = miniGame.hands;
+    miniStreak.textContent = miniGame.streak;
+
+    const accuracy = miniGame.hands > 0
+      ? Math.round((miniGame.score / miniGame.hands) * 100)
+      : 0;
+
+    miniAccuracy.textContent = accuracy + "%";
+    
+if (miniGame.currentHand) {
+    // Display using CSS cards
+    displayMiniHandCSS(); // your function that sets data-card attributes
+}
+  }
+}
+
 // ------------------ BUTTON FLASH ------------------
 function flashButton(btn,d=150) { 
   btn.classList.add("level-up-flash"); 
@@ -387,5 +668,8 @@ document.querySelectorAll("#win-screen button,#lose-screen button").forEach(btn 
   });
 });
 
+
+
 // ------------------ INIT ------------------
 loadGame();
+loadMiniGame();
