@@ -57,7 +57,8 @@ body::before {
 
 /* Keep 10% vertical offset ONLY for start & game */
 #start-screen,
-#game-screen {
+#game-screen, 
+#range-screen {
   margin-top: 10vh;
 }
 
@@ -226,8 +227,14 @@ button.danger {
 .app-title,
 #game-content h2,
 #win-screen h2,
-#lose-screen h2 {
+#lose-screen h2, 
+#range-screen h2 {
   color: #f5d742;
+}
+
+/* ----- Range Screen Header Invisible ----- */
+#range-screen h2 {
+  visibility: hidden;
 }
 
 /* ---------- HUD BAR ---------- */
@@ -351,6 +358,32 @@ body.privacy-active .top-controls {
   user-select: none;
 }
 
+
+/* ---------- RANGE TOGGLE BUTTON ---------- */
+#rangeToggle {
+  display: none;
+  position: fixed;
+  top: 27vh;
+  right: 20px;
+  font-size: 12px;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  color: #000;
+  z-index: 1002;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 /* ===== Enable scroll only in compact / floating window ===== */
 
 @media (max-height: 650px) {
@@ -363,3 +396,92 @@ body.privacy-active .top-controls {
     padding-bottom: 40px; /* extra breathing room */
   }
 }
+
+#rangeToggle {
+  display: none;
+}
+
+/* ---------- MINI GAME CARDS ---------- */
+#miniHand {
+  display: flex;         /* arrange children horizontally */
+  gap: 2px;             /* space between cards */
+  justify-content: center; /* optional: center them horizontally */
+  align-items: center;   /* optional: vertically align if cards have different heights */
+  margin-bottom: 20px;    /* adds spacing below the cards */
+}
+
+.card {
+  width: 70px;
+  height: 100px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  border: 2px solid black;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  margin: 0 2px;
+
+  /* Text inside card */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;       /* Increase this for bigger font */
+  font-weight: bold;
+  color: black;           /* or red depending on suit */
+}
+
+/* Example for a specific card */
+.card[data-card="Ah"] { background-image: url("images/cards/Ah.png"); }
+.card[data-card="2h"] { background-image: url("images/cards/2h.png"); }
+.card[data-card="3h"] { background-image: url("images/cards/3h.png"); }
+.card[data-card="4h"] { background-image: url("images/cards/4h.png"); }
+.card[data-card="5h"] { background-image: url("images/cards/5h.png"); }
+.card[data-card="6h"] { background-image: url("images/cards/6h.png"); }
+.card[data-card="7h"] { background-image: url("images/cards/7h.png"); }
+.card[data-card="8h"] { background-image: url("images/cards/8h.png"); }
+.card[data-card="9h"] { background-image: url("images/cards/9h.png"); }
+.card[data-card="Th"] { background-image: url("images/cards/Th.png"); }
+.card[data-card="Jh"] { background-image: url("images/cards/Jh.png"); }
+.card[data-card="Qh"] { background-image: url("images/cards/Qh.png"); }
+.card[data-card="Kh"] { background-image: url("images/cards/Kh.png"); }
+
+.card[data-card="Ad"] { background-image: url("images/cards/Ad.png"); }
+.card[data-card="2d"] { background-image: url("images/cards/2d.png"); }
+.card[data-card="3d"] { background-image: url("images/cards/3d.png"); }
+.card[data-card="4d"] { background-image: url("images/cards/4d.png"); }
+.card[data-card="5d"] { background-image: url("images/cards/5d.png"); }
+.card[data-card="6d"] { background-image: url("images/cards/6d.png"); }
+.card[data-card="7d"] { background-image: url("images/cards/7d.png"); }
+.card[data-card="8d"] { background-image: url("images/cards/8d.png"); }
+.card[data-card="9d"] { background-image: url("images/cards/9d.png"); }
+.card[data-card="Td"] { background-image: url("images/cards/Td.png"); }
+.card[data-card="Jd"] { background-image: url("images/cards/Jd.png"); }
+.card[data-card="Qd"] { background-image: url("images/cards/Qd.png"); }
+.card[data-card="Kd"] { background-image: url("images/cards/Kd.png"); }
+
+.card[data-card="Ac"] { background-image: url("images/cards/Ac.png"); }
+.card[data-card="2c"] { background-image: url("images/cards/2c.png"); }
+.card[data-card="3c"] { background-image: url("images/cards/3c.png"); }
+.card[data-card="4c"] { background-image: url("images/cards/4c.png"); }
+.card[data-card="5c"] { background-image: url("images/cards/5c.png"); }
+.card[data-card="6c"] { background-image: url("images/cards/6c.png"); }
+.card[data-card="7c"] { background-image: url("images/cards/7c.png"); }
+.card[data-card="8c"] { background-image: url("images/cards/8c.png"); }
+.card[data-card="9c"] { background-image: url("images/cards/9c.png"); }
+.card[data-card="Tc"] { background-image: url("images/cards/Tc.png"); }
+.card[data-card="Jc"] { background-image: url("images/cards/Jc.png"); }
+.card[data-card="Qc"] { background-image: url("images/cards/Qc.png"); }
+.card[data-card="Kc"] { background-image: url("images/cards/Kc.png"); }
+
+.card[data-card="As"] { background-image: url("images/cards/As.png"); }
+.card[data-card="2s"] { background-image: url("images/cards/2s.png"); }
+.card[data-card="3s"] { background-image: url("images/cards/3s.png"); }
+.card[data-card="4s"] { background-image: url("images/cards/4s.png"); }
+.card[data-card="5s"] { background-image: url("images/cards/5s.png"); }
+.card[data-card="6s"] { background-image: url("images/cards/6s.png"); }
+.card[data-card="7s"] { background-image: url("images/cards/7s.png"); }
+.card[data-card="8s"] { background-image: url("images/cards/8s.png"); }
+.card[data-card="9s"] { background-image: url("images/cards/9s.png"); }
+.card[data-card="Ts"] { background-image: url("images/cards/Ts.png"); }
+.card[data-card="Js"] { background-image: url("images/cards/Js.png"); }
+.card[data-card="Qs"] { background-image: url("images/cards/Qs.png"); }
+.card[data-card="Ks"] { background-image: url("images/cards/Ks.png"); }
