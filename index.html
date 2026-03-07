@@ -132,3 +132,36 @@
     <p><strong>### Limp:</strong> AA-22, AKs-ATs, AKo-AJo, A9s-A8s | 10% </p>
     <p><strong>### L-Call:</strong> JJ-22 | 5% </p>
     <p><strong>### L-3Bet:</strong> AA-QQ, AKs-ATs, AKo-AJo, A9s-A8s | 5% </p>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="win-screen" class="screen">
+  <div class="spacer"></div>
+  <h2>You Win 🏆</h2>
+  <button onclick="resetGame()">Back to Start</button>
+
+  <!-- Final Session Stats -->
+  <p class="range-gap"></p>
+  <p class="range-gap"></p>
+
+  <div id="finalHUD" class="hud-bar" style="margin-top: 20px; text-align:center; font-family: monospace; font-size:12px;">
+    <p style="margin:4px 0; color:#f5d742;"><strong>Your session stats:</strong></p>
+    <span class="hud-title">V</span> <span class="hud-value">0</span>
+    <span class="hud-title">P</span> <span class="hud-value">0</span>
+    <span class="hud-title">3B</span> <span class="hud-value">0</span>
+    <span class="hud-title">4B</span> <span class="hud-value">0</span>
+    <span class="hud-title">H</span> <span class="hud-value">0</span>
+  </div>
+</div>
+
+  <!-- LOSE SCREEN -->
+  <div id="lose-screen" class="screen">
+    <div class="spacer"></div>
+    <h2>Game Over</h2>
+    <button onclick="resetGame()">Restart</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
